@@ -2,4 +2,6 @@
 hdeem*/
 hdeem*.tar.gz
 
-
+*.o
+*.so
+*.out
