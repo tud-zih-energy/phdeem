@@ -1,24 +1,36 @@
 /**
- * Compile with:
- *  1. mpicc -fPIC -Wall -Werror -I../hdeem_2.1.5 -lfreeipmi -L../hdeem_2.1.5 -lhdeem -c phdeem.c -o phdeem.o
- *
- *  2. mpicc -shared -Wl,-soname,libphdeem.so -o libphdeem.so phdeem.o
+  Copyright (c) 2016, Technische Universität Dresden, Germany
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without modification, are permitted
+  provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice, this list of conditions
+     and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+     conditions and the following disclaimer in the documentation and/or other materials provided
+     with the distribution.
+
+  3. Neither the name of the copyright holder nor the names of its contributors may be used to
+     endorse or promote products derived from this software without specific prior written
+     permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+  FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #include <mpi.h>
 #include <time.h>
 
 #include "hdeem.h"
 #include "phdeem.h"
-
-struct phdeem_info
-{
-    /** The hash of the name of the host of the caller */
-    unsigned int node_hash;
-    /** The rank of the caller on it's host */
-    int node_rank;
-    /** The sub communicator the caller is in */
-    MPI_Comm sub_comm;
-};
 
 /**
  * Gives an unsigned int hash for a given string.
@@ -48,7 +60,7 @@ int phdeem_init( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const caller
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
-    
+
     int resultlen;
     char hostname[MPI_MAX_PROCESSOR_NAME];
 
@@ -107,7 +119,7 @@ int phdeem_close( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const calle
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
-    
+
     // If we're not root, exit immediately
     if( caller->node_rank != 0 )
     {
@@ -116,15 +128,15 @@ int phdeem_close( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const calle
 
     // Else, call hdeem_close() and return
     hdeem_close( hdeem_data );
-    
+
     // Free the node local communicator
     ret_val->mpi_ret_value = MPI_Comm_free( &caller->sub_comm );
     if( ret_val->mpi_ret_value != MPI_SUCCESS )
     {
         return PHDEEM_MPI_ERROR;
     }
-    
-    // Nobody should be root anymore after this.
+
+    // Nobody should be root after this anymore.
     caller->node_rank = -1;
     return PHDEEM_SUCCESS;
 }
@@ -135,7 +147,7 @@ int phdeem_start( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
-    
+
     // If we're not root, exit immediately
     if( caller->node_rank != 0 )
     {
@@ -148,7 +160,7 @@ int phdeem_start( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const
     {
         return PHDEEM_HDEEM_ERROR;
     }
-    
+
     return PHDEEM_SUCCESS;
 }
 
@@ -158,7 +170,7 @@ int phdeem_stop( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const 
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
-    
+
     // If we're not root, exit immediately
     if( caller->node_rank != 0 )
     {
@@ -171,7 +183,7 @@ int phdeem_stop( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const 
     {
         return PHDEEM_HDEEM_ERROR;
     }
-    
+
     return PHDEEM_SUCCESS;
 }
 
@@ -181,7 +193,7 @@ int phdeem_check_status( hdeem_bmc_data_t *const hdeem_data, hdeem_status_t *con
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
-    
+
     // If we're not root, exit immediately
     if( caller->node_rank != 0 )
     {
@@ -194,7 +206,7 @@ int phdeem_check_status( hdeem_bmc_data_t *const hdeem_data, hdeem_status_t *con
     {
         return PHDEEM_HDEEM_ERROR;
     }
-    
+
     return PHDEEM_SUCCESS;
 }
 
@@ -204,7 +216,7 @@ int phdeem_get_global( hdeem_bmc_data_t *const hdeem_data, hdeem_global_reading_
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
-    
+
     // If we're not root, exit immediately
     if( caller->node_rank != 0 )
     {
@@ -217,7 +229,7 @@ int phdeem_get_global( hdeem_bmc_data_t *const hdeem_data, hdeem_global_reading_
     {
         return PHDEEM_HDEEM_ERROR;
     }
-    
+
     return PHDEEM_SUCCESS;
 }
 
@@ -227,7 +239,7 @@ int phdeem_get_stats( hdeem_bmc_data_t *const hdeem_data, hdeem_stats_reading_t 
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
-    
+
     // If we're not root, exit immediately
     if( caller->node_rank != 0 )
     {
@@ -240,7 +252,7 @@ int phdeem_get_stats( hdeem_bmc_data_t *const hdeem_data, hdeem_stats_reading_t 
     {
         return PHDEEM_HDEEM_ERROR;
     }
-    
+
     return PHDEEM_SUCCESS;
 }
 
@@ -250,7 +262,7 @@ int phdeem_data_free( hdeem_global_reading_t *const hdeem_read, const phdeem_inf
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
-    
+
     // If we're not root, exit immediately
     if( caller->node_rank != 0 )
     {
@@ -268,7 +280,7 @@ int phdeem_stats_free( hdeem_stats_reading_t *const hdeem_read, const phdeem_inf
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
-    
+
     // If we're not root, exit immediately
     if( caller->node_rank != 0 )
     {
@@ -286,7 +298,7 @@ int phdeem_clear( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
-    
+
     // If we're not root, exit immediately
     if( caller->node_rank != 0 )
     {
@@ -299,6 +311,6 @@ int phdeem_clear( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const
     {
         return PHDEEM_HDEEM_ERROR;
     }
-    
+
     return PHDEEM_SUCCESS;
 }
