@@ -41,7 +41,7 @@
  *
  * @return      The hash.
  */
-unsigned int _phdeem_hash( const char* str )
+static unsigned int _phdeem_hash( const char* str )
 {
     unsigned int hash = 0;
     int c;
@@ -54,8 +54,8 @@ unsigned int _phdeem_hash( const char* str )
     return hash;
 }
 
-int phdeem_init( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const caller,
-                 MPI_Comm current_comm, phdeem_int_ret_value_t *const ret_val )
+int phdeem_init( hdeem_bmc_data_t* hdeem_data, phdeem_info_t* info, MPI_Comm current_comm,
+                 phdeem_status_t* ret_val )
 {
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
@@ -70,32 +70,32 @@ int phdeem_init( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const caller
     {
         return PHDEEM_MPI_ERROR;
     }
-    caller->node_hash = _phdeem_hash( hostname );
+    info->node_hash = _phdeem_hash( hostname );
 
     // Get the current rank
-    ret_val->mpi_ret_value = MPI_Comm_rank( current_comm, &caller->node_rank );
+    ret_val->mpi_ret_value = MPI_Comm_rank( current_comm, &info->node_rank );
     if( ret_val->mpi_ret_value != MPI_SUCCESS )
     {
         return PHDEEM_MPI_ERROR;
     }
 
     // Split the communicator
-    ret_val->mpi_ret_value = MPI_Comm_split( current_comm, caller->node_hash, caller->node_rank,
-                    &caller->sub_comm );
+    ret_val->mpi_ret_value = MPI_Comm_split( current_comm, info->node_hash, info->node_rank,
+                    &info->sub_comm );
     if( ret_val->mpi_ret_value != MPI_SUCCESS )
     {
         return PHDEEM_MPI_ERROR;
     }
 
     // Save the caller's new rank into the struct
-    ret_val->mpi_ret_value = MPI_Comm_rank( caller->sub_comm, &caller->node_rank );
+    ret_val->mpi_ret_value = MPI_Comm_rank( info->sub_comm, &info->node_rank );
     if( ret_val->mpi_ret_value != MPI_SUCCESS )
     {
         return PHDEEM_MPI_ERROR;
     }
 
     // If the split leads to the position where the caller is not root, exit.
-    if( caller->node_rank != 0 )
+    if( info->node_rank != 0 )
     {
         return PHDEEM_NOT_ROOT;
     }
@@ -113,15 +113,14 @@ int phdeem_init( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const caller
     return PHDEEM_SUCCESS;
 }
 
-int phdeem_close( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const caller,
-                  phdeem_int_ret_value_t *const ret_val )
+int phdeem_close( hdeem_bmc_data_t* hdeem_data, phdeem_info_t* info, phdeem_status_t* ret_val )
 {
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
 
     // If we're not root, exit immediately
-    if( caller->node_rank != 0 )
+    if( info->node_rank != 0 )
     {
         return PHDEEM_NOT_ROOT;
     }
@@ -130,26 +129,26 @@ int phdeem_close( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const calle
     hdeem_close( hdeem_data );
 
     // Free the node local communicator
-    ret_val->mpi_ret_value = MPI_Comm_free( &caller->sub_comm );
+    ret_val->mpi_ret_value = MPI_Comm_free( &info->sub_comm );
     if( ret_val->mpi_ret_value != MPI_SUCCESS )
     {
         return PHDEEM_MPI_ERROR;
     }
 
     // Nobody should be root after this anymore.
-    caller->node_rank = -1;
+    info->node_rank = -1;
     return PHDEEM_SUCCESS;
 }
 
-int phdeem_start( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const caller,
-                  phdeem_int_ret_value_t *const ret_val )
+int phdeem_start( hdeem_bmc_data_t* hdeem_data, const phdeem_info_t* info,
+                  phdeem_status_t* ret_val )
 {
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
 
     // If we're not root, exit immediately
-    if( caller->node_rank != 0 )
+    if( info->node_rank != 0 )
     {
         return PHDEEM_NOT_ROOT;
     }
@@ -164,15 +163,15 @@ int phdeem_start( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const
     return PHDEEM_SUCCESS;
 }
 
-int phdeem_stop( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const caller,
-                 phdeem_int_ret_value_t *const ret_val )
+int phdeem_stop( hdeem_bmc_data_t* hdeem_data, const phdeem_info_t* info,
+                 phdeem_status_t* ret_val )
 {
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
 
     // If we're not root, exit immediately
-    if( caller->node_rank != 0 )
+    if( info->node_rank != 0 )
     {
         return PHDEEM_NOT_ROOT;
     }
@@ -187,15 +186,15 @@ int phdeem_stop( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const 
     return PHDEEM_SUCCESS;
 }
 
-int phdeem_check_status( hdeem_bmc_data_t *const hdeem_data, hdeem_status_t *const hdeem_stats,
-                         const phdeem_info_t *const caller, phdeem_int_ret_value_t *const ret_val )
+int phdeem_check_status( hdeem_bmc_data_t* hdeem_data, hdeem_status_t* hdeem_stats,
+                         const phdeem_info_t* info, phdeem_status_t* ret_val )
 {
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
 
     // If we're not root, exit immediately
-    if( caller->node_rank != 0 )
+    if( info->node_rank != 0 )
     {
         return PHDEEM_NOT_ROOT;
     }
@@ -210,15 +209,15 @@ int phdeem_check_status( hdeem_bmc_data_t *const hdeem_data, hdeem_status_t *con
     return PHDEEM_SUCCESS;
 }
 
-int phdeem_get_global( hdeem_bmc_data_t *const hdeem_data, hdeem_global_reading_t *const hdeem_read,
-                       const phdeem_info_t *const caller, phdeem_int_ret_value_t *const ret_val )
+int phdeem_get_global( hdeem_bmc_data_t* hdeem_data, hdeem_global_reading_t* hdeem_read,
+                       const phdeem_info_t* info, phdeem_status_t* ret_val )
 {
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
 
     // If we're not root, exit immediately
-    if( caller->node_rank != 0 )
+    if( info->node_rank != 0 )
     {
         return PHDEEM_NOT_ROOT;
     }
@@ -233,15 +232,15 @@ int phdeem_get_global( hdeem_bmc_data_t *const hdeem_data, hdeem_global_reading_
     return PHDEEM_SUCCESS;
 }
 
-int phdeem_get_stats( hdeem_bmc_data_t *const hdeem_data, hdeem_stats_reading_t *const hdeem_read,
-                      const phdeem_info_t *const caller, phdeem_int_ret_value_t *const ret_val )
+int phdeem_get_stats( hdeem_bmc_data_t* hdeem_data, hdeem_stats_reading_t* hdeem_read,
+                      const phdeem_info_t* info, phdeem_status_t* ret_val )
 {
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
 
     // If we're not root, exit immediately
-    if( caller->node_rank != 0 )
+    if( info->node_rank != 0 )
     {
         return PHDEEM_NOT_ROOT;
     }
@@ -256,15 +255,15 @@ int phdeem_get_stats( hdeem_bmc_data_t *const hdeem_data, hdeem_stats_reading_t 
     return PHDEEM_SUCCESS;
 }
 
-int phdeem_data_free( hdeem_global_reading_t *const hdeem_read, const phdeem_info_t *const caller,
-                      phdeem_int_ret_value_t *const ret_val )
+int phdeem_data_free( hdeem_global_reading_t* hdeem_read, const phdeem_info_t* info,
+                      phdeem_status_t* ret_val )
 {
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
 
     // If we're not root, exit immediately
-    if( caller->node_rank != 0 )
+    if( info->node_rank != 0 )
     {
         return PHDEEM_NOT_ROOT;
     }
@@ -274,15 +273,15 @@ int phdeem_data_free( hdeem_global_reading_t *const hdeem_read, const phdeem_inf
     return PHDEEM_SUCCESS;
 }
 
-int phdeem_stats_free( hdeem_stats_reading_t *const hdeem_read, const phdeem_info_t *const caller,
-                       phdeem_int_ret_value_t *const ret_val )
+int phdeem_stats_free( hdeem_stats_reading_t* hdeem_read, const phdeem_info_t* info,
+                       phdeem_status_t* ret_val )
 {
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
 
     // If we're not root, exit immediately
-    if( caller->node_rank != 0 )
+    if( info->node_rank != 0 )
     {
         return PHDEEM_NOT_ROOT;
     }
@@ -292,15 +291,15 @@ int phdeem_stats_free( hdeem_stats_reading_t *const hdeem_read, const phdeem_inf
     return PHDEEM_SUCCESS;
 }
 
-int phdeem_clear( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const caller,
-                  phdeem_int_ret_value_t *const ret_val )
+int phdeem_clear( hdeem_bmc_data_t* hdeem_data, const phdeem_info_t* info,
+                  phdeem_status_t* ret_val )
 {
     // Reset the return values
     ret_val->hdeem_ret_value = 0;
     ret_val->mpi_ret_value = MPI_SUCCESS;
 
     // If we're not root, exit immediately
-    if( caller->node_rank != 0 )
+    if( info->node_rank != 0 )
     {
         return PHDEEM_NOT_ROOT;
     }

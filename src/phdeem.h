@@ -52,18 +52,18 @@ typedef struct phdeem_info
 /**
  * Stores the return values from hdeem and MPI.
  */
-typedef struct phdeem_int_ret_value
+typedef struct phdeem_status
 {
     int mpi_ret_value;
     int hdeem_ret_value;
-} phdeem_int_ret_value_t;
+} phdeem_status_t;
 
 /**
  * Return values.
  *
  * When no errors occurred, PHDEEM_SUCCESS will be returned. If the caller isn't the root process,
  * PHDEEM_NOT_ROOT will be returned. On errors, PHDEEM_HDEEM_ERROR or PHDEEM_MPI_ERROR resp. will be
- * returned. On errors, take a look at the phdeem_int_ret_value_t passed.
+ * returned. On errors, take a look at the phdeem_status_t passed.
  */
 enum phdeem_return_values
 {
@@ -81,15 +81,15 @@ enum phdeem_return_values
  * processes in the new communicators.
  *
  * @param hdeem_data    Information that otherwise would have been passed to hdeem_init().
- * @param caller        An empty phdeem_info_t. All necessary information will be stored in this
+ * @param info          An empty phdeem_info_t. All necessary information will be stored in this
  *                      struct.
  * @param current_comm  The process' current MPI communicator.
- * @param ret_val       The phdeem_int_ret_value_t the return values are stored in.
+ * @param ret_val       The phdeem_status_t the return values are stored in.
  *
  * @return              A phdeem return value.
  */
-int phdeem_init( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const caller,
-                 MPI_Comm current_comm, phdeem_int_ret_value_t *const ret_val );
+int phdeem_init( hdeem_bmc_data_t* hdeem_data, phdeem_info_t* info, MPI_Comm current_comm,
+                 phdeem_status_t* ret_val );
 
 /**
  * Finalizes the phdeem library.
@@ -97,13 +97,12 @@ int phdeem_init( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const caller
  * Calls hdeem_close.
  *
  * @param hdeem_data    Information that otherwise would have been passed to hdeem_close().
- * @param caller        phdeem_info_t holding the caller's information.
- * @param ret_val       The phdeem_int_ret_value_t the return values are stored in.
+ * @param info          phdeem_info_t holding the caller's information.
+ * @param ret_val       The phdeem_status_t the return values are stored in.
  *
  * @return              A phdeem return value.
  */
-int phdeem_close( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const caller,
-                  phdeem_int_ret_value_t *const ret_val );
+int phdeem_close( hdeem_bmc_data_t* hdeem_data, phdeem_info_t* info, phdeem_status_t* ret_val );
 
 /**
  * Calls hdeem_start().
@@ -111,13 +110,13 @@ int phdeem_close( hdeem_bmc_data_t *const hdeem_data, phdeem_info_t *const calle
  * For further information please read the hdeem.h code comments.
  *
  * @param hdeem_data    Information that otherwise would have been passed to hdeem_start().
- * @param caller        phdeem_info_t holding the caller's information.
- * @param ret_val       The phdeem_int_ret_value_t the return values are stored in.
+ * @param info          phdeem_info_t holding the caller's information.
+ * @param ret_val       The phdeem_status_t the return values are stored in.
  *
  * @return              A phdeem return value.
  */
-int phdeem_start( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const caller,
-                  phdeem_int_ret_value_t *const ret_val );
+int phdeem_start( hdeem_bmc_data_t* hdeem_data, const phdeem_info_t* info,
+                  phdeem_status_t* ret_val );
 
 /**
  * Calls hdeem_stop().
@@ -125,13 +124,13 @@ int phdeem_start( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const
  * For further information please read the hdeem.h code comments.
  *
  * @param hdeem_data    Information that otherwise would have been passed to hdeem_stop().
- * @param caller        phdeem_info_t holding the caller's information.
- * @param ret_val       The phdeem_int_ret_value_t the return values are stored in.
+ * @param info          phdeem_info_t holding the caller's information.
+ * @param ret_val       The phdeem_status_t the return values are stored in.
  *
  * @return              A phdeem return value.
  */
-int phdeem_stop( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const caller,
-                 phdeem_int_ret_value_t *const ret_val );
+int phdeem_stop( hdeem_bmc_data_t* hdeem_data, const phdeem_info_t* info,
+                 phdeem_status_t* ret_val );
 
 /**
  * Calls hdeem_check_status().
@@ -140,13 +139,13 @@ int phdeem_stop( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const 
  *
  * @param hdeem_data    Information that otherwise would have been passed to hdeem_check_status().
  * @param hdeem_stats   Information that otherwise would have been passed to hdeem_check_status().
- * @param caller        phdeem_info_t holding the caller's information.
- * @param ret_val       The phdeem_int_ret_value_t the return values are stored in.
+ * @param info          phdeem_info_t holding the caller's information.
+ * @param ret_val       The phdeem_status_t the return values are stored in.
  *
  * @return              A phdeem return value.
  */
-int phdeem_check_status( hdeem_bmc_data_t *const hdeem_data, hdeem_status_t *const hdeem_stats,
-                         const phdeem_info_t *const caller, phdeem_int_ret_value_t *const ret_val );
+int phdeem_check_status( hdeem_bmc_data_t* hdeem_data, hdeem_status_t* hdeem_stats,
+                         const phdeem_info_t* info, phdeem_status_t* ret_val );
 
 /**
  * Calls hdeem_get_global().
@@ -155,13 +154,13 @@ int phdeem_check_status( hdeem_bmc_data_t *const hdeem_data, hdeem_status_t *con
  *
  * @param hdeem_data    Information that otherwise would have been passed to hdeem_get_global().
  * @param hdeem_read    Information that otherwise would have been passed to hdeem_get_global().
- * @param caller        phdeem_info_t holding the caller's information.
- * @param ret_val       The phdeem_int_ret_value_t the return values are stored in.
+ * @param info          phdeem_info_t holding the caller's information.
+ * @param ret_val       The phdeem_status_t the return values are stored in.
  *
  * @return              A phdeem return value.
  */
-int phdeem_get_global( hdeem_bmc_data_t *const hdeem_data, hdeem_global_reading_t *const hdeem_read,
-                       const phdeem_info_t *const caller, phdeem_int_ret_value_t *const ret_val );
+int phdeem_get_global( hdeem_bmc_data_t* hdeem_data, hdeem_global_reading_t* hdeem_read,
+                       const phdeem_info_t* info, phdeem_status_t* ret_val );
 
 /**
  * Calls hdeem_get_stats().
@@ -170,13 +169,13 @@ int phdeem_get_global( hdeem_bmc_data_t *const hdeem_data, hdeem_global_reading_
  *
  * @param hdeem_data    Information that otherwise would have been passed to hdeem_get_stats().
  * @param hdeem_read    Information that otherwise would have been passed to hdeem_get_stats().
- * @param caller        phdeem_info_t holding the caller's information.
- * @param ret_val       The phdeem_int_ret_value_t the return values are stored in.
+ * @param info          phdeem_info_t holding the caller's information.
+ * @param ret_val       The phdeem_status_t the return values are stored in.
  *
  * @return              A phdeem return value.
  */
-int phdeem_get_stats( hdeem_bmc_data_t *const hdeem_data, hdeem_stats_reading_t *const hdeem_read,
-                      const phdeem_info_t *const caller, phdeem_int_ret_value_t *const ret_val );
+int phdeem_get_stats( hdeem_bmc_data_t* hdeem_data, hdeem_stats_reading_t* hdeem_read,
+                      const phdeem_info_t* info, phdeem_status_t* ret_val );
 
 /**
  * Calls hdeem_data_free().
@@ -184,13 +183,13 @@ int phdeem_get_stats( hdeem_bmc_data_t *const hdeem_data, hdeem_stats_reading_t 
  * For further information please read the hdeem.h code comments.
  *
  * @param hdeem_read    Information that otherwise would have been passed to hdeem_data_free().
- * @param caller        phdeem_info_t holding the caller's information.
- * @param ret_val       The phdeem_int_ret_value_t the return values are stored in.
+ * @param info          phdeem_info_t holding the caller's information.
+ * @param ret_val       The phdeem_status_t the return values are stored in.
  *
  * @return              A phdeem return value.
  */
-int phdeem_data_free( hdeem_global_reading_t *const hdeem_read, const phdeem_info_t *const caller,
-                      phdeem_int_ret_value_t *const ret_val );
+int phdeem_data_free( hdeem_global_reading_t* hdeem_read, const phdeem_info_t* info,
+                      phdeem_status_t* ret_val );
 
 /**
  * Calls hdeem_stats_free().
@@ -198,13 +197,13 @@ int phdeem_data_free( hdeem_global_reading_t *const hdeem_read, const phdeem_inf
  * For further information please read the hdeem.h code comments.
  *
  * @param hdeem_read    Information that otherwise would have been passed to hdeem_stats_free().
- * @param caller        phdeem_info_t holding the caller's information.
- * @param ret_val       The phdeem_int_ret_value_t the return values are stored in.
+ * @param info          phdeem_info_t holding the caller's information.
+ * @param ret_val       The phdeem_status_t the return values are stored in.
  *
  * @return              A phdeem return value.
  */
-int phdeem_stats_free( hdeem_stats_reading_t *const hdeem_read, const phdeem_info_t *const caller,
-                       phdeem_int_ret_value_t *const ret_val );
+int phdeem_stats_free( hdeem_stats_reading_t* hdeem_read, const phdeem_info_t* info,
+                       phdeem_status_t* ret_val );
 
 /**
  * Calls hdeem_clear().
@@ -212,12 +211,12 @@ int phdeem_stats_free( hdeem_stats_reading_t *const hdeem_read, const phdeem_inf
  * For further information please read the hdeem.h code comments.
  *
  * @param hdeem_data    Information that otherwise would have been passed to hdeem_clear().
- * @param caller        phdeem_info_t holding the caller's information.
- * @param ret_val       The phdeem_int_ret_value_t the return values are stored in.
+ * @param info          phdeem_info_t holding the caller's information.
+ * @param ret_val       The phdeem_status_t the return values are stored in.
  *
  * @return              A phdeem return value.
  */
-int phdeem_clear( hdeem_bmc_data_t *const hdeem_data, const phdeem_info_t *const caller,
-                  phdeem_int_ret_value_t *const ret_val );
+int phdeem_clear( hdeem_bmc_data_t* hdeem_data, const phdeem_info_t* info,
+                  phdeem_status_t* ret_val );
 
 #endif /* PHDEEM_H */
