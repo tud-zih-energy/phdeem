@@ -46,7 +46,7 @@ int main( int argc, char** argv )
     // Initializing phdeem
     int ret;
     phdeem_info_t caller;
-    phdeem_int_ret_value_t int_rets;
+    phdeem_status_t int_rets;
     hdeem_bmc_data_t hdeem_data;
     hdeem_data.hasGPIO = 1;
     hdeem_data.host = "";
