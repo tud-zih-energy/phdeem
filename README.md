@@ -57,14 +57,14 @@ The usage of *phdeem* is just the same as the usage of `libhdeem`. You just have
 
 * `ret_val`
 
-    A `phdeem_int_ret_value_t` containing the return values of the internally called `libhdeem` and
+    A `phdeem_status_t` containing the return values of the internally called `libhdeem` and
     MPI functions. You can access the values via `mpi_ret_value` and `hdeem_ret_value` resp.
 
 They are passed as references to all function calls as shown below:
 
     int ret;
     phdeem_info_t caller;
-    phdeem_int_ret_value_t int_rets;
+    phdeem_status_t int_rets;
     hdeem_bmc_data_t hdeem_data;
 
     ret = phdeem_init( &hdeem_data, &caller, MPI_COMM_WORLD, &int_rets );
