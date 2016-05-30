@@ -36,6 +36,11 @@ To compile this plugin, you need:
     header files and libraries with `HDEEM_INCLUDE_DIR` and `HDEEM_LIBRARY` or `FreeIPMI_INCLUDE_DIR`
     and `FreeIPMI_LIBRARY` resp.
 
+    If you want to build the examples, include `BUILD_EXAMPLES=on` in your CMake call, or for the
+    tests `BUILD_TESTS=on` resp., e.g.:
+
+        cmake .. -DBUILD_EXAMPLES=on -DBUILD_TESTS=on
+
 3. Invoke make
 
         make
@@ -90,13 +95,24 @@ For more information take a look at the comments in the header file or the examp
 
 > *phdeem* is **not** thread-safe!
 
+###Tests
+
+*phdeem* uses a hash function to determine whether the calling process is the root process on a
+specific node. This function may collide for some of your node names. If you encounter errors,
+please check if these are caused by collisions of the hash function.
+
+In order to do that you can use the `test_hash` program which expects a newline seperated list of
+node names in a file called `nodes.txt` and prints the number of dublicates found. You can build the
+`test_hash` program by passing `-DBUILD_TESTS=on` as an argument to you CMake call. If you encounter
+a non-zero return value, please file an [issue on Github](https://github.com/tud-zih-energy/phdeem/issues).
+
 ###Environment variables
 
 None. For environment variables influencing the build, see the *Building* section.
 
 ###If anything fails
 
-1. Check if your hardware has the hdeem capability.
+1. Check if your hardware has hdeem capability.
 
 2. Write an [issue on Github](https://github.com/tud-zih-energy/phdeem/issues).
 

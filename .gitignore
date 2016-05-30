@@ -2,6 +2,9 @@
 hdeem*/
 hdeem*.tar.gz
 
+# Node list
+taurus.txt
+
 # Object files
 *.o
 *.ko
