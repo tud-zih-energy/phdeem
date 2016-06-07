@@ -68,12 +68,12 @@ The usage of *phdeem* is just the same as the usage of `libhdeem`. You just have
 They are passed as references to all function calls as shown below:
 
 ```c
-    int ret;
-    phdeem_info_t info;
-    phdeem_status_t int_rets;
-    hdeem_bmc_data_t hdeem_data;
+int ret;
+phdeem_info_t info;
+phdeem_status_t int_rets;
+hdeem_bmc_data_t hdeem_data;
 
-    ret = phdeem_init( &hdeem_data, &info, MPI_COMM_WORLD, &int_rets );
+ret = phdeem_init( &hdeem_data, &info, MPI_COMM_WORLD, &int_rets );
 ```
 
 The return values of the functions tell you if either
