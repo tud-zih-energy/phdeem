@@ -55,7 +55,7 @@ To compile this plugin, you need:
 The usage of *phdeem* is just the same as the usage of `libhdeem`. You just have to replace the
 `hdeem_` in the function names with `phdeem_` and provide some additional parameters:
 
-* `caller`
+* `info`
 
     A `phdeem_info_t` storing the information about the caller for each process. You don't have to
     worry about the contents of this, it is just for internal context.
@@ -67,12 +67,14 @@ The usage of *phdeem* is just the same as the usage of `libhdeem`. You just have
 
 They are passed as references to all function calls as shown below:
 
+```c
     int ret;
-    phdeem_info_t caller;
+    phdeem_info_t info;
     phdeem_status_t int_rets;
     hdeem_bmc_data_t hdeem_data;
 
-    ret = phdeem_init( &hdeem_data, &caller, MPI_COMM_WORLD, &int_rets );
+    ret = phdeem_init( &hdeem_data, &info, MPI_COMM_WORLD, &int_rets );
+```
 
 The return values of the functions tell you if either
 
