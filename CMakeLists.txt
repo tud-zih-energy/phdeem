@@ -33,6 +33,8 @@ option(BUILD_TESTS "Build the test programs." OFF)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/common")
 
+add_definitions("-Wall -Werror -pedantic" ${MPI_C_COMPILE_FLAGS} ${MPI_C_LINK_FLAGS})
+
 if(BUILD_LIBRARY)
     find_package(HDEEM REQUIRED)
     find_package(FreeIPMI REQUIRED)
@@ -40,16 +42,20 @@ if(BUILD_LIBRARY)
 
     set(PHDEEM_SOURCE_FILES "${PROJECT_SOURCE_DIR}/src/phdeem.c" "${PROJECT_SOURCE_DIR}/src/phdeem.h")
 
-    add_definitions("-Wall -Werror -pedantic -ansi -std=gnu99" ${MPI_C_COMPILE_FLAGS} ${MPI_C_LINK_FLAGS})
     include_directories(SYSTEM ${HDEEM_INCLUDE_DIRS} ${FreeIPMI_INCLUDE_DIRS} ${MPI_C_INCLUDE_PATH})
     add_library(${PROJECT_NAME} SHARED ${PHDEEM_SOURCE_FILES})
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=gnu99")
     target_link_libraries(${PROJECT_NAME} ${HDEEM_LIBRARIES} ${FreeIPMI_LIBRARIES} ${MPI_C_LIBRARIES})
 endif()
 
 if(BUILD_EXAMPLES)
-    include_directories("src/" SYSTEM ${HDEEM_INCLUDE_DIRS} ${FreeIPMI_INCLUDE_DIRS} ${MPI_C_INCLUDE_PATH})
-    add_executable("full_example" "examples/full_example.c")
+    include_directories("${PROJECT_SOURCE_DIR}/src/" SYSTEM ${HDEEM_INCLUDE_DIRS} ${FreeIPMI_INCLUDE_DIRS} ${MPI_C_INCLUDE_PATH})
+    add_executable("full_example" "${PROJECT_SOURCE_DIR}/examples/full_example.c")
+    set_target_properties("full_example" PROPERTIES COMPILE_FLAGS "-std=gnu99")
     target_link_libraries("full_example" ${PROJECT_NAME})
+    add_executable("cpp_example" "${PROJECT_SOURCE_DIR}/examples/cpp_example.cpp")
+    set_target_properties("cpp_example" PROPERTIES COMPILE_FLAGS "-std=c++11" ${MPI_COMPILE_FLAGS})
+    target_link_libraries("cpp_example" ${PROJECT_NAME} ${MPI_CXX_LIBRARIES})
 endif()
 
 if(BUILD_TESTS)
