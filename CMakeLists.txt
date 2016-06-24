@@ -31,18 +31,18 @@ option(BUILD_LIBRARY "Build the phdeem library" ON)
 option(BUILD_EXAMPLES "Build the examples." OFF)
 option(BUILD_TESTS "Build the test programs." OFF)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/common)
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/common")
 
 if(BUILD_LIBRARY)
     find_package(HDEEM REQUIRED)
     find_package(FreeIPMI REQUIRED)
     find_package(MPI REQUIRED)
-    
-    file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/*.c ${PROJECT_SOURCE_DIR}/src/*.h)
-    
-    add_definitions(-Wall -Werror -pedantic -ansi -std=gnu99 ${MPI_C_COMPILE_FLAGS} ${MPI_C_LINK_FLAGS})
+
+    set(PHDEEM_SOURCE_FILES "${PROJECT_SOURCE_DIR}/src/phdeem.c" "${PROJECT_SOURCE_DIR}/src/phdeem.h")
+
+    add_definitions("-Wall -Werror -pedantic -ansi -std=gnu99" ${MPI_C_COMPILE_FLAGS} ${MPI_C_LINK_FLAGS})
     include_directories(SYSTEM ${HDEEM_INCLUDE_DIRS} ${FreeIPMI_INCLUDE_DIRS} ${MPI_C_INCLUDE_PATH})
-    add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+    add_library(${PROJECT_NAME} SHARED ${PHDEEM_SOURCE_FILES})
     target_link_libraries(${PROJECT_NAME} ${HDEEM_LIBRARIES} ${FreeIPMI_LIBRARIES} ${MPI_C_LIBRARIES})
 endif()
 
