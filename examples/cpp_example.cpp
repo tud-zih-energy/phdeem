@@ -1,4 +1,6 @@
+#include <iostream>
 #include <mpi.h>
+#include <unistd.h>
 
 #include "cpphdeem.hpp"
 
@@ -20,7 +22,15 @@ int main( int argc, char** argv )
     // If we're not root, we don't need to call the following functions
     if( conn.root( ) )
     {
-        
+        conn.start( );
+        conn.get_global( );
+        usleep( 100000 );
+        conn.get_global( );
+        auto data = conn.get_hdeem_global( );
+
+        std::cout << "Number of samples:" << data.nb_blade_values << std::endl;
+
+        conn.stop( );
     }
 
     MPI_Finalize( );

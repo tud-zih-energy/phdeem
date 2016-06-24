@@ -28,7 +28,8 @@ namespace cpphdeem
     {
     public:
         connection( )
-        : m_root( false ), hdeem_data( ), internal_status( ), return_values( )
+        : m_root( false ), hdeem_data( ), hdeem_global( ), hdeem_stats( ), internal_status( ),
+          return_values( )
         { }
 
         ~connection( )
@@ -56,6 +57,36 @@ namespace cpphdeem
                                                     &return_values ) );
         }
 
+        phdeem_return_value start( )
+        {
+            return map_to_enum_class( phdeem_start( &hdeem_data,
+                                                    &internal_status,
+                                                    &return_values ) );
+        }
+
+        phdeem_return_value stop( )
+        {
+            return map_to_enum_class( phdeem_stop( &hdeem_data,
+                                                   &internal_status,
+                                                   &return_values ) );
+        }
+
+        phdeem_return_value check_status( )
+        {
+            return map_to_enum_class( phdeem_check_status( &hdeem_data,
+                                                           &hdeem_stats,
+                                                           &internal_status,
+                                                           &return_values ) );
+        }
+
+        phdeem_return_value get_global( )
+        {
+            return map_to_enum_class( phdeem_get_global( &hdeem_data,
+                                                         &hdeem_global,
+                                                         &internal_status,
+                                                         &return_values ) );
+        }
+
         inline bool root( ) const
         {
             return m_root;
@@ -64,6 +95,16 @@ namespace cpphdeem
         hdeem_bmc_data_t& get_hdeem_data( )
         {
             return hdeem_data;
+        }
+
+        hdeem_global_reading_t get_hdeem_global( ) const
+        {
+            return hdeem_global;
+        }
+
+        hdeem_status_t get_hdeem_status( ) const
+        {
+            return hdeem_stats;
         }
 
         phdeem_status_t get_return_values( ) const
@@ -91,6 +132,8 @@ namespace cpphdeem
         bool m_root;
 
         hdeem_bmc_data_t hdeem_data;
+        hdeem_global_reading_t hdeem_global;
+        hdeem_status_t hdeem_stats;
         phdeem_info_t internal_status;
         phdeem_status_t return_values;
     };
