@@ -14,6 +14,10 @@ To compile this plugin, you need:
 
 * FreeIPMI
 
+For building the examples you'll additionally need:
+
+* A C++ 11 compatible compiler
+
 ###Building
 
 1. Create a build directory
@@ -52,6 +56,8 @@ To compile this plugin, you need:
 
 ##Usage
 
+###C-interface
+
 The usage of *phdeem* is just the same as the usage of `libhdeem`. You just have to replace the
 `hdeem_` in the function names with `phdeem_` and provide some additional parameters:
 
@@ -87,6 +93,24 @@ The return values of the functions tell you if either
     corresponding return values in `ret_val`).
 
 For more information take a look at the comments in the header file or the examples.
+
+###C++-interface
+
+The usage of *cpphdeem* is slightly different from the usage of the C-interface and hdeem itself as
+you don't need to pass arguments to the function calls. These are handled internally and if you need
+to access their values you have to use the appropriate getter methods.
+
+Otherwise the usage of *cpphdeem* is similar to the usage of the 'blank' hdeem library. After
+calling the constructor of the `connection` class, you can call it's methods just as you would call
+hdeem functions (but without the parameters).
+
+> *Note:*
+
+> Clean-up tasks are **not** implicitly done in the destructor of the `connection` class to give
+> you the maximum freedom in terms of usage. You have to explicitly call functions like `stop` and
+> `clear` (corresponding to `hdeem_stop` and `hdeem_clear`) at the right points in your program.
+
+
 
 > *Note:*
 
