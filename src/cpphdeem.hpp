@@ -54,7 +54,11 @@ namespace cpphdeem
     };
 
     /**
-     * MPI enabled C++ interface for hdeem
+     * MPI enabled C++ interface for hdeem.
+     * 
+     * After calling the constructor, just use the methods of the class as you would use the 
+     * original hdeem functions. Parameters are handled internally, if you need to access their
+     * values, use the appropriate getter functions.
      */
     class connection
     {
@@ -187,6 +191,9 @@ namespace cpphdeem
          */
         connection( const connection& rhs ) = delete;
 
+        /**
+         * Maps the untyped return values from phdeem to the type-safe enum class.
+         */
         inline phdeem_return_value map_to_enum_class( int ret_val ) const
         {
             switch( ret_val )
