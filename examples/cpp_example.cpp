@@ -64,7 +64,7 @@ int main( int argc, char** argv )
             auto data = conn.get_hdeem_data( );
             auto readings = conn.get_hdeem_global( );
 
-            std::cout << "Node: " << data.name_blade_sensors[0]
+            std::cout << "Node: " << data.name_blade_sensors[0] << " "
                       << "Number of samples:" << readings.nb_blade_values
                       << std::endl;
         }
