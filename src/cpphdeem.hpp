@@ -53,6 +53,9 @@ namespace cpphdeem
         MPI_ERROR,
     };
 
+    /**
+     * MPI enabled C++ interface for hdeem
+     */
     class connection
     {
     public:
@@ -176,6 +179,14 @@ namespace cpphdeem
         }
 
     private:
+        /**
+         * Deletes the default copy constructor.
+         * 
+         * I can't think of any use case for the copy constructor right now, so I delete it. If you
+         * need it, please let me know and I'll implement a proper one.
+         */
+        connection( const connection& rhs ) = delete;
+
         inline phdeem_return_value map_to_enum_class( int ret_val ) const
         {
             switch( ret_val )
