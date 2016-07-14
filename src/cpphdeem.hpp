@@ -1,7 +1,8 @@
 #pragma once
 
-#include <mpi.h>
 #include <cstdint>
+#include <mpi.h>
+#include <stdexcept>
 
 extern "C"
 {
@@ -28,8 +29,8 @@ namespace cpphdeem
     {
     public:
         connection( )
-        : m_root( false ), hdeem_data( ), hdeem_global( ), hdeem_stats( ), internal_status( ),
-          return_values( )
+        : m_root( false ), hdeem_data( ), hdeem_global( ), hdeem_stats_reading( ), hdeem_stats( ),
+          internal_status( ), return_values( )
         { }
 
         ~connection( )
@@ -87,6 +88,35 @@ namespace cpphdeem
                                                          &return_values ) );
         }
 
+        phdeem_return_value get_stats( )
+        {
+            return map_to_enum_class( phdeem_get_stats( &hdeem_data,
+                                                        &hdeem_stats_reading,
+                                                        &internal_status,
+                                                        &return_values ) );
+        }
+
+        phdeem_return_value data_free( )
+        {
+            return map_to_enum_class( phdeem_data_free( &hdeem_global,
+                                                        &internal_status,
+                                                        &return_values ) );
+        }
+
+        phdeem_return_value stats_free( )
+        {
+            return map_to_enum_class( phdeem_stats_free( &hdeem_stats_reading,
+                                                         &internal_status,
+                                                         &return_values ) );
+        }
+
+        phdeem_return_value clear( )
+        {
+            return map_to_enum_class( phdeem_clear( &hdeem_data,
+                                                    &internal_status,
+                                                    &return_values ) );
+        }
+
         inline bool root( ) const
         {
             return m_root;
@@ -100,6 +130,11 @@ namespace cpphdeem
         hdeem_global_reading_t get_hdeem_global( ) const
         {
             return hdeem_global;
+        }
+
+        hdeem_stats_reading_t get_hdeem_stats_reading( ) const
+        {
+            return hdeem_stats_reading;
         }
 
         hdeem_status_t get_hdeem_status( ) const
@@ -124,8 +159,10 @@ namespace cpphdeem
                 case 2:
                     return phdeem_return_value::HDEEM_ERROR;
                 case 3:
-                default:
                     return phdeem_return_value::MPI_ERROR;
+                default:
+                    throw std::invalid_argument( "cpphdeem: Unrecognized return value in "
+                                                 "'map_to_enum_class'" );
             }
         }
 
@@ -133,6 +170,7 @@ namespace cpphdeem
 
         hdeem_bmc_data_t hdeem_data;
         hdeem_global_reading_t hdeem_global;
+        hdeem_stats_reading_t hdeem_stats_reading;
         hdeem_status_t hdeem_stats;
         phdeem_info_t internal_status;
         phdeem_status_t return_values;

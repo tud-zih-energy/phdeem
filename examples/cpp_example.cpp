@@ -22,17 +22,31 @@ int main( int argc, char** argv )
     // If we're not root, we don't need to call the following functions
     if( conn.root( ) )
     {
+        // Start measurement
         conn.start( );
-        conn.get_global( );
-        usleep( 100000 );
-        conn.get_global( );
-        auto data = conn.get_hdeem_global( );
 
-        std::cout << "Number of samples:" << data.nb_blade_values << std::endl;
+        for( int i = 0; i <= 2; ++i )
+        {
+            // Wait a little for data to accumulate
+            usleep( 1000000 );
 
+            // Read data
+            conn.get_global( );
+
+            auto data = conn.get_hdeem_data( );
+            auto readings = conn.get_hdeem_global( );
+
+            std::cout << "Node: " << data.name_blade_sensors[0]
+                      << "Number of samples:" << readings.nb_blade_values
+                      << std::endl;
+        }
+
+        // Finalize the connection
         conn.stop( );
+        conn.clear( );
     }
 
+    // Finalize MPI
     MPI_Finalize( );
 
     return 0;

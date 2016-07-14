@@ -77,7 +77,7 @@ int main( int argc, char** argv )
             printf( "'get_global'   from processor %s, global rank %d. Return value was %d\n",
                     processor_name, world_rank, ret );
 
-            printf( "\n%s, read %llu values\n--------------\n", hdeem_data.name_blade_sensors[0],
+            printf( "\n%s, read %lu values\n--------------\n", hdeem_data.name_blade_sensors[0],
                     readings.nb_blade_values);
 
             sleep(1);
