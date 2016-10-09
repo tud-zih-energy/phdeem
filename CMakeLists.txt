@@ -40,7 +40,7 @@ if(BUILD_LIBRARY)
 
     set(PHDEEM_SOURCE_FILES "${PROJECT_SOURCE_DIR}/src/phdeem.c" "${PROJECT_SOURCE_DIR}/src/phdeem.h")
 
-    add_definitions("-Wall -Werror -pedantic -ansi -std=gnu99" ${MPI_C_COMPILE_FLAGS} ${MPI_C_LINK_FLAGS})
+    add_definitions("-Wall -Werror -pedantic -std=gnu99" ${MPI_C_COMPILE_FLAGS} ${MPI_C_LINK_FLAGS})
     include_directories(SYSTEM ${HDEEM_INCLUDE_DIRS} ${FreeIPMI_INCLUDE_DIRS} ${MPI_C_INCLUDE_PATH})
     add_library(${PROJECT_NAME} SHARED ${PHDEEM_SOURCE_FILES})
     target_link_libraries(${PROJECT_NAME} ${HDEEM_LIBRARIES} ${FreeIPMI_LIBRARIES} ${MPI_C_LIBRARIES})
