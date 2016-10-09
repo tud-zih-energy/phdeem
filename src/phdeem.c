@@ -26,11 +26,11 @@
   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <hdeem.h>
+#include "phdeem.h"
 #include <mpi.h>
 #include <time.h>
 
-#include "hdeem.h"
-#include "phdeem.h"
 
 /**
  * Gives an unsigned int hash for a given string.

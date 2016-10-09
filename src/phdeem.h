@@ -29,10 +29,11 @@
 #ifndef PHDEEM_H
 #define PHDEEM_H
 
+#include <hdeem.h>
 #include <mpi.h>
+
 #include <time.h>
 
-#include "hdeem.h"
 
 /**
  * Stores necessary information about the calling process.
